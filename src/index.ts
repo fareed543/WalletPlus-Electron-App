@@ -39,6 +39,8 @@ if (electronIsDev) {
 
 // Run Application
 (async () => {
+  // autoUpdater.autoDownload = false; 
+  
   // Wait for electron app to be ready.
   await app.whenReady();
   // Security - Set Content-Security-Policy based on whether or not we are in dev mode.
@@ -53,46 +55,54 @@ if (electronIsDev) {
   //   url: 'https://walletplus.in/electron' // This url is for testing purpose. Please update the proper url. And in electron-builder.config.json file too. Same url to be updated in publish section
   // });
   // autoUpdater.checkForUpdates();
-  // autoUpdater.checkForUpdatesAndNotify(); // TODO: Need to check
+  autoUpdater.checkForUpdatesAndNotify(); // TODO: Need to check
 })();
 
 /* Auto Update Code Start */
-// const dialogOpts: MessageBoxOptions = {
-//   type: 'error',
-//   title: 'Notice',
-//   buttons: ['Close'],
-//   message: ''
-// }
+const dialogOpts: MessageBoxOptions = {
+  type: 'error',
+  title: 'Notice',
+  buttons: ['Close'],
+  message: ''
+}
 
-// autoUpdater.on('update-available', (info) => {
-//   console.log(info);
-//   dialogOpts.message = `Update Info: ${info.version}`;
-//   dialog.showMessageBox(dialogOpts);
-//   autoUpdater.downloadUpdate();
-// });
+autoUpdater.on('update-available', (info) => {
+  console.log(info);
+  dialogOpts.message = `Update Info: ${info.version}`;
+  dialog.showMessageBox(dialogOpts);
+  autoUpdater.downloadUpdate();
+});
 
-
-// autoUpdater.on('update-downloaded', (info) => {
-//   dialogOpts.message = `Downloaded : ${info.version}`;
-//   dialog.showMessageBox(dialogOpts);
-//   autoUpdater.quitAndInstall(); // This will Intall New Version
-// });
-
+// let currentDialog = null;
 // autoUpdater.on('download-progress', (progressObj) => {
-//   const { percent } = progressObj;
-//   const mainWindow = myCapacitorApp.getMainWindow();
-//   mainWindow.webContents.executeJavaScript(`localStorage.setItem("downloadPercentage", "${Math.round(percent)}")`, true)
-//   dialogOpts.message = `Downloading : ${percent}`;
-//   dialog.showMessageBox(dialogOpts);
+  // const { percent } = progressObj;
+  // const mainWindow = myCapacitorApp.getMainWindow();
+  // mainWindow.webContents.executeJavaScript(`localStorage.setItem("downloadPercentage", "${Math.round(percent)}")`, true)
+  // if(percent){
+  //   // const roundedPercent = Math.round(percent);
+  //   // if (roundedPercent % 1 === 0) {
+  //     // Close the current dialog before opening a new one
+  //     if (currentDialog && typeof currentDialog.close === 'function') {
+  //       currentDialog.close();
+  //     }
+  //     dialogOpts.message = `Downloading: ${percent}%`;
+  //     currentDialog = dialog.showMessageBox(dialogOpts);
+  //   // }
+  // }
 // });
 
+autoUpdater.on('update-downloaded', (info) => {
+  // dialogOpts.message = `Downloaded : ${info.version}`;
+  // dialog.showMessageBox(dialogOpts);
+  autoUpdater.quitAndInstall();
+});
 
-// autoUpdater.on('error', (err) => {
-//   console.log(err);
-//   // For testing purpose
-//   dialogOpts.message = `Error test: ${err}`;
-//   dialog.showMessageBox(dialogOpts);
-// })
+autoUpdater.on('error', (err) => {
+  console.log(err);
+  // For testing purpose
+  dialogOpts.message = `Error test: ${err}`;
+  dialog.showMessageBox(dialogOpts);
+})
 
 /** Auto Update code End */
 

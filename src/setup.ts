@@ -120,6 +120,7 @@ export class ElectronCapacitorApp {
         // Use preload to inject the electron varriant overrides for capacitor plugins.
         // preload: join(app.getAppPath(), "node_modules", "@capacitor-community", "electron", "dist", "runtime", "electron-rt.js"),
         preload: preloadPath,
+        webSecurity :  false
       },
     });
     this.mainWindowState.manage(this.MainWindow);
@@ -207,9 +208,10 @@ export class ElectronCapacitorApp {
         this.MainWindow.show();
       }
       setTimeout(() => {
-        // if (electronIsDev) {
-          // this.MainWindow.webContents.openDevTools();
-        // }
+        console.log("electronIsDev"+electronIsDev);
+        if (electronIsDev) {
+          this.MainWindow.webContents.openDevTools();
+        }
         CapElectronEventEmitter.emit('CAPELECTRON_DeeplinkListenerInitialized', '');
       }, 400);
     });
@@ -222,10 +224,13 @@ export function setupContentSecurityPolicy(customScheme: string): void {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
+        // 'Content-Security-Policy': [
+        //   electronIsDev
+        //     ? `default-src ${customScheme}://* 'unsafe-inline' devtools://* 'unsafe-eval' data:`
+        //     : `default-src ${customScheme}://* 'unsafe-inline' data:`,
+        // ],
         'Content-Security-Policy': [
-          electronIsDev
-            ? `default-src ${customScheme}://* 'unsafe-inline' devtools://* 'unsafe-eval' data:`
-            : `default-src ${customScheme}://* 'unsafe-inline' data:`,
+          `default-src * 'unsafe-inline' 'unsafe-eval' data:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline' 'unsafe-eval'; font-src * 'unsafe-inline' 'unsafe-eval'; img-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline' 'unsafe-eval'; manifest-src * 'unsafe-inline' 'unsafe-eval'; worker-src * 'unsafe-inline' 'unsafe-eval'; frame-src * 'unsafe-inline' 'unsafe-eval'; media-src * 'unsafe-inline' 'unsafe-eval';`
         ],
       },
     });
